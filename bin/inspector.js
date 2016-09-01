@@ -16,7 +16,13 @@ process.argv.forEach(function (arg) {
         break;
       case '--web-host':
         options.webHost = (parts[1] && parts[1] !== 'null') ? parts[1] : null;
-	break;
+	    break;
+      case '--debug-port':
+          options.debugPort = parseInt(parts[1], 10);
+          break;
+      case '--debug-host':
+          options.debugHost = (parts[1] && parts[1] !== 'null') ? parts[1] : null;
+          break;
       default:
         console.log('unknown option: ' + parts[0]);
         break;
@@ -25,7 +31,10 @@ process.argv.forEach(function (arg) {
     else if (parts[0] === '--help') {
       console.log('Usage: node-inspector [options]');
       console.log('Options:');
+      console.log('--web-host=[address]     address to host the inspector (default 0.0.0.0)');
       console.log('--web-port=[port]     port to host the inspector (default 8080)');
+      console.log('--debug-host=[address]     address to host the node module (default 127.0.0.1)');
+      console.log('--debug-port=[port]     port to host the node module (default 5858)');
       process.exit();
     }
   }
@@ -52,6 +61,9 @@ fs.readFile(path.join(__dirname, '../config.json'), function(err, data) {
   if (!config.webHost) {
     config.webHost = null;    // null implies listen on all interfaces
   }
+  if (!config.debugHost) {
+    config.debugHost = '127.0.0.1';
+  }
   if (!config.debugPort) {
     config.debugPort = 5858;
   }
@@ -60,6 +72,12 @@ fs.readFile(path.join(__dirname, '../config.json'), function(err, data) {
   }
   if (options.webHost) {
     config.webHost = options.webHost;
+  }
+  if (options.debugPort) {
+    config.debugPort = options.debugPort;
+  }
+  if (options.debugHost) {
+    config.debugHost = options.debugHost;
   }
 
   debugServer = new DebugServer();
